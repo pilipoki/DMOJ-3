@@ -9,23 +9,51 @@ public class App {
         // convert into char arrays to make letter shifting easier
         char[] keywordArr = keyword.toCharArray();
         char[] wordArr = word.toCharArray();
+        byte numOfSpecialChar = 0;
+        // remove all special characters
+        for (int i = 0; i < wordArr.length; i++) {
+            if (((int) wordArr[i] - 65) > 25 || ((int) wordArr[i] - 65) < 0) {
+                // special character
+                wordArr[i] = ' ';
+                numOfSpecialChar++;
+            }
+        }
+        int l = 0;
+        char[] letterWord = new char[wordArr.length - numOfSpecialChar];
+        for (int j = 0; j < wordArr.length; j++) {
+            // if not special character, copy in to the new letterWord array
+            if (wordArr[j] != ' ') {
+                letterWord[l] = wordArr[j];
+                l++;
+            }
+        }
         // split the word into ints columns. (# of columns = keyword.length())
         // copy array in a 2d array
         // the # of rows is the "spillover" of letters when you divide by the # of
         // columns
         // if you cant fit the rows fully, you need another, hence the ternary operation
         // for row calculation below.
-        int rows = wordArr.length % (keywordArr.length) != 0 ? wordArr.length % (keywordArr.length)
-                : wordArr.length / (keywordArr.length) + 1;
+        int rows = letterWord.length % (keywordArr.length) == 0 ? letterWord.length % (keywordArr.length)
+                : letterWord.length / (keywordArr.length) + 1;
         int columns = keywordArr.length;
         char[][] word2DArr = new char[rows][columns];
         // temp variable to iterate through original
         int k = 0;
+        // temp variable to make sure array does not go out of bounds (The blank spaces
+        // of the 2D array that are needed when column overflows)
+        int p = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                // copy in word array with "spillover"
-                word2DArr[i][j] = wordArr[k];
-                k++;
+                if (p > letterWord.length - 1) {
+                    // reached end of valid letters, copy in ' ' for the rest of the 2d array to
+                    // indicate that this row/column combination is blank due to spillover
+                    word2DArr[i][j] = ' ';
+                } else {
+                    // copy in word array with "spillover"
+                    word2DArr[i][j] = letterWord[k];
+                    k++;
+                }
+                p++;
             }
         }
 
@@ -40,26 +68,39 @@ public class App {
         // shift and remove letters
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                // Make sure it is between A and Z
-                if (((int) word2DArr[i][j] - 65) > 25 || ((int) word2DArr[i][j] - 65) < 0) {
-                    // leave it blank and remove later in the full encoded word
-                    word2DArr[i][j] = ' ';
+                if (word2DArr[i][j] == ' ') {
+                    // skip because it is blank, end loop bc this means we are at the end of our
+                    // table (blank characters in last row due to spillover)
+                    break;
+                }
+                // shift letter based on what letter in the column is
+                if ((int) word2DArr[i][j] + letterShift[j] > 90) {
+                    word2DArr[i][j] = (char) (64 + (int) word2DArr[i][j] + letterShift[j] - 90);
                 } else {
-                    // shift letter based on what letter in the column is
                     word2DArr[i][j] = (char) ((int) word2DArr[i][j] + letterShift[j]);
                 }
-            }
 
-            // create an encoded version of the original word
-            
-            String temp = word2DArr.toString();
-            char[] encodedWord = temp.toCharArray();
-            for (int j = 0; j < encodedWord.length; j++) {
-                if(encodedWord[j] == ' '){
-                    //do nothing
-                }else System.out.print(encodedWord[j]);
             }
         }
+        //print out 2D char array
+        for (int i = 0; i < word2DArr.length; i++) {
+            for (int j = 0; j < word2DArr[i].length; j++) {
+                if(word2DArr[i][j] != ' '){
+                    System.out.println(word2DArr[i][j]);
+                }
+            }
+        }
+
+        // // create an encoded version of the original word
+
+        // String temp = word2DArr.toString();
+        // char[] encodedWord = temp.toCharArray();
+        // for (int j = 0; j < encodedWord.length; j++) {
+        // if (encodedWord[j] == ' ') {
+        // // do nothing
+        // } else
+        // System.out.print(encodedWord[j]);
+        // }
 
     }
 }
