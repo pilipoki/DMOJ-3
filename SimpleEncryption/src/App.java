@@ -6,13 +6,16 @@ public class App {
         Scanner sc = new Scanner(System.in);
         String keyword = sc.nextLine();
         String word = sc.nextLine();
+        keyword = keyword.toUpperCase();
+        word = word.toUpperCase();
         // convert into char arrays to make letter shifting easier
-        char[] keywordArr = keyword.toCharArray();
+        char[] OGkeywordArr = keyword.toCharArray();
         char[] wordArr = word.toCharArray();
         byte numOfSpecialChar = 0;
+
         // remove all special characters
         for (int i = 0; i < wordArr.length; i++) {
-            if (((int) wordArr[i] - 65) > 25 || ((int) wordArr[i] - 65) < 0) {
+            if ((int) wordArr[i] > 90 || (int) wordArr[i] < 65) {
                 // special character
                 wordArr[i] = ' ';
                 numOfSpecialChar++;
@@ -27,13 +30,33 @@ public class App {
                 l++;
             }
         }
+
+        // remove all special characters from keyword
+        l =0; numOfSpecialChar =0;    
+        for (int i = 0; i < OGkeywordArr.length; i++) {
+            if ((int) OGkeywordArr[i] > 90 || (int) OGkeywordArr[i] < 65) {
+                // special character
+                OGkeywordArr[i] = ' ';
+                numOfSpecialChar++;
+            }
+        }
+        char[] keywordArr = new char[OGkeywordArr.length - numOfSpecialChar];
+        for (int j = 0; j < OGkeywordArr.length; j++) {
+            // if not special character, copy in to the new letterWord array
+            if (OGkeywordArr[j] != ' ') {
+                keywordArr[l] = OGkeywordArr[j];
+                l++;
+            }
+        }
+
         // split the word into ints columns. (# of columns = keyword.length())
         // copy array in a 2d array
         // the # of rows is the "spillover" of letters when you divide by the # of
         // columns
         // if you cant fit the rows fully, you need another, hence the ternary operation
         // for row calculation below.
-        int rows = letterWord.length % (keywordArr.length) == 0 ? letterWord.length % (keywordArr.length)
+        
+        int rows = letterWord.length % (keywordArr.length) == 0 ? letterWord.length / (keywordArr.length)
                 : letterWord.length / (keywordArr.length) + 1;
         int columns = keywordArr.length;
         char[][] word2DArr = new char[rows][columns];
@@ -56,7 +79,6 @@ public class App {
                 p++;
             }
         }
-
         // keep track of how much each letter shifts in the keyword at each element
         int[] letterShift = new int[keywordArr.length];
         // calculate lettershifts for each letter
@@ -65,7 +87,7 @@ public class App {
             letterShift[i] = (int) keywordArr[i] - 65;
         }
 
-        // shift and remove letters
+        // shift letters
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (word2DArr[i][j] == ' ') {
@@ -82,25 +104,13 @@ public class App {
 
             }
         }
-        //print out 2D char array
+        // print out 2D char array
         for (int i = 0; i < word2DArr.length; i++) {
             for (int j = 0; j < word2DArr[i].length; j++) {
-                if(word2DArr[i][j] != ' '){
-                    System.out.println(word2DArr[i][j]);
+                if (word2DArr[i][j] != ' ') {
+                    System.out.print(word2DArr[i][j]);
                 }
             }
         }
-
-        // // create an encoded version of the original word
-
-        // String temp = word2DArr.toString();
-        // char[] encodedWord = temp.toCharArray();
-        // for (int j = 0; j < encodedWord.length; j++) {
-        // if (encodedWord[j] == ' ') {
-        // // do nothing
-        // } else
-        // System.out.print(encodedWord[j]);
-        // }
-
     }
 }
